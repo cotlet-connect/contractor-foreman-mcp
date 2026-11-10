@@ -105,6 +105,7 @@ Contractor Foreman's published integrations list no official ChatGPT app or Clau
 
 - [Contractor Foreman on Cotlet.dev](https://cotlet.dev/integrations/contractor-foreman-api-mcp-server?utm_source=github&utm_medium=readme&utm_campaign=contractor-foreman&utm_content=find)
 - [PyPI package contractor-foreman-mcp](https://pypi.org/project/contractor-foreman-mcp/)
+- [Odel](https://odel.app/modules/cotlet/contractor-foreman)
 - [Step-by-step guide (PDF) on Internet Archive](https://archive.org/details/cotlet-connect-contractor-foreman-to-ai-agents-guide)
 
 ## Also works with
