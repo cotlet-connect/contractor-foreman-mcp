@@ -1,32 +1,68 @@
-# How to connect Contractor Foreman to Claude Code, ChatGPT and any AI agent
+# Contractor Foreman API integration and MCP server: connect Contractor Foreman to ChatGPT, Claude and any AI agent
 
-**Yes, Claude, ChatGPT and other AI agents can work in your Contractor Foreman account.** Contractor Foreman's published integrations list no official ChatGPT app or Claude connector. Cotlet.dev connects your own signed-in Contractor Foreman account to any AI agent, so you can ask in plain words and the AI builds estimates, updates projects and sends invoices for you.
+Contractor Foreman API integration and MCP server, unofficial, by Cotlet. Your AI works in your own signed-in Contractor Foreman account: projects, estimates, change orders, invoices, daily logs, time cards and schedules, on the same screens your login opens. No developer and no Contractor Foreman API key needed. Cotlet is independent and is not affiliated with Contractor Foreman.
 
-## What you can ask
+**Does Contractor Foreman have an API or an MCP server?** Contractor Foreman has no public API (checked 23 Nov 2026); its API keys only connect Zapier and a website lead form. Its Zapier app has seven triggers and two actions, Create Customer and Create Lead, and Zapier's Contractor Foreman MCP has the same two actions. It has no Make or n8n app. Its QuickBooks Online sync does not carry change orders or daily logs, and time cards reach Gusto or ADP only as a file you download and import. Contractor Foreman has no MCP server and no ChatGPT or Claude app of its own; its AI Estimator works inside the app.
 
-> Create an estimate for the Miller kitchen remodel: cabinets $14,500, countertops $6,200 and 80 hours of labor at $65, then send it to Dave Miller.
+## What contractors ask their AI to do in Contractor Foreman
 
-> Turn the approved Johnson deck estimate into a project and schedule framing to start next Monday.
+| Job | Ask your AI | Make it repeat |
+|---|---|---|
+| QuickBooks check | "Compare this month's Contractor Foreman invoices and bills with QuickBooks and list what did not sync." | Monthly |
+| Jobs over budget | "Show which jobs are over budget, by cost code, and what pushed each one over." | Weekly |
+| Time cards to payroll | "Total last week's approved time cards per employee and job, ready for Gusto." | Weekly |
+| Time card check | "Flag late starts, long lunches and odd hours in this week's GPS time cards." | Weekly |
+| Daily logs from site notes | "Write today's daily log for the Maple St job from my notes and photos. Show me before you save." | Daily |
+| Estimate from a job description | "Build an estimate for a 12x16 deck from this description, using my cost codes. Show me before you save." | Per bid |
+| Change order from a client email | "Draft a change order from this client email about the extra window. Send nothing yet." | When the client asks |
+| Leads from Angi or your website | "Add today's Angi leads as leads with phone, address and the work asked for." | Your own endpoint, called from your form tool or Zapier |
+| Reports in a spreadsheet | "Put each job's budget, costs and billed amount in my Google Sheet." | Your own endpoint, called from Google Sheets |
+| Estimate items from Excel | "Import these estimate items and cost codes from my spreadsheet. Show me before you save." | Once |
+| Leaving Contractor Foreman | "Export all projects, estimates, invoices and contacts before I move to another system." | Once |
 
-> Which invoices are more than 30 days past due? List the client, project and amount.
+Your AI asks you before it sends, books or changes anything. Payments stay in your hands: Cotlet refuses payments.
 
-> Invoice the Oak Street bathroom project for the 50% progress payment and email it to Sarah Chen.
+## Your own Contractor Foreman API, built with Cotlet
 
-> Show me all active projects with budget vs. actual costs and list any that are more than 10% over.
+Contractor Foreman gives you no public API; its Zapier app only creates customers and leads. With Cotlet you build your own: your AI does the job once in your Cloud Browser, you save it as an endpoint, and you call it from Google Sheets, QuickBooks, Gusto, Zapier, Make, n8n, your own code.
+
+Examples you can build in a few minutes (none of them exists until you build it):
+
+| Endpoint you build | What it returns or does |
+|---|---|
+| `job-costs` | budget, actual cost and variance per cost code for a job |
+| `invoices-and-bills` | invoices and bills for a period, with job and amount |
+| `time-cards` | approved hours per employee and job for a period |
+| `daily-logs` | daily logs of a date across jobs |
+| `open-change-orders` | change orders waiting for the client, with amounts |
+| `new-lead` | adds a lead with phone, address and the work asked for (writes only after you allow it) |
+
+Call it with your Cotlet API key, JSON in and JSON out:
+
+```bash
+curl -X POST https://cotlet.dev/api/v1/custom/job-costs \
+  -H "Authorization: Bearer $COTLET_API_KEY" -H "Content-Type: application/json" -d '{}'
+```
+
+Limits: one call runs up to 90 seconds, writes wait for your consent, payments are blocked. Start here: https://cotlet.dev/app/custom-api/new?app=contractor-foreman
 
 ## Connect in 2 minutes
 
-Get your API key at https://cotlet.dev/app and export it as `COTLET_API_KEY`.
+Sign up at https://cotlet.dev, sign in to Contractor Foreman once in your Cloud Browser, then add Cotlet to your AI.
+
+### Claude
+
+Settings → Connectors → Add custom connector, paste `https://cotlet.dev/mcp/v1` and sign in with Cotlet.dev.
+
+### ChatGPT
+
+Open Plugins in ChatGPT, choose Create as a plugin, paste `https://cotlet.dev/mcp/v1` and sign in with Cotlet.dev. No API key needed.
 
 ### Claude Code
 
 ```bash
 claude mcp add --transport http cotlet https://cotlet.dev/mcp/v1 --header "Authorization: Bearer $COTLET_API_KEY"
 ```
-
-### ChatGPT
-
-Settings → Apps → add connector URL `https://cotlet.dev/mcp/v1`, then sign in with Cotlet.dev. No API key needed.
 
 ### Cursor
 
@@ -83,68 +119,46 @@ python3 contractor_foreman_agent.py tools     # list Cotlet.dev tools
 python3 contractor_foreman_agent.py serve     # start the stdio MCP server (same as no argument)
 ```
 
-## Questions from Contractor Foreman users
-
+## Questions from Contractor Foreman contractors
 **Does Contractor Foreman have an API?**
 
-Contractor Foreman connects to other apps through integrations such as Zapier. Cotlet.dev works in your own Contractor Foreman account directly, so your AI agent can create estimates, update projects and send invoices without a Contractor Foreman API key.
+No public one (checked 23 Nov 2026). Its API keys only connect Zapier and a website lead form, and the Zapier app's actions only create customers and leads. With Cotlet you build your own endpoints in your signed-in Contractor Foreman account.
 
-**How do I connect Contractor Foreman to ChatGPT?**
+**Can AI check my Contractor Foreman invoices and bills against QuickBooks?**
 
-Add Cotlet.dev as an app in ChatGPT (Settings → Apps, connector URL `https://cotlet.dev/mcp/v1`), sign in to Contractor Foreman once in your Cotlet.dev Cloud Browser, and ask ChatGPT in plain words. No code and no Contractor Foreman API key.
+Yes. Your AI compares the month's invoices and bills with QuickBooks and lists what did not sync. Change orders and daily logs do not sync on their own, so it lists those too.
 
-**Is there a way to use Claude with Contractor Foreman?**
+**How do I move Contractor Foreman time cards into Gusto or ADP?**
 
-Yes. In Claude Code run the one-line `claude mcp add` command above; in the Claude app add `https://cotlet.dev/mcp/v1` as a custom connector. Claude then works in your own Contractor Foreman account.
+Contractor Foreman hands hours over as a file you download and import. Your AI totals approved hours per employee and job and prepares that file for Gusto or ADP.
 
-**Is there a Contractor Foreman MCP server?**
+**Can ChatGPT or Claude write my Contractor Foreman daily logs?**
 
-Contractor Foreman's published integrations list no official ChatGPT app or Claude connector. Cotlet.dev is a hosted MCP server that works in Contractor Foreman for you, 24/7, with Claude, ChatGPT, Cursor, Codex, n8n, Make and Zapier.
+Yes. It writes the daily log from your notes and photos for the job you name, and saves it after you check it.
+
+**Can AI show which Contractor Foreman jobs are over budget?**
+
+Yes. It reads budgets and costs per cost code and tells you which jobs are over and what pushed them over.
+
+**Is Zapier's Contractor Foreman MCP enough for ChatGPT or Claude?**
+
+It has two actions, Create Customer and Create Lead. Cotlet works in your whole Contractor Foreman account: estimates, change orders, invoices, daily logs and time cards, after your OK for anything that changes.
+
+**How do I export everything from Contractor Foreman?**
+
+Your AI exports projects, estimates, invoices and contacts from the screens your login opens, so you keep everything when you move.
 
 ## Find it on
 
-- [Contractor Foreman on Cotlet.dev](https://cotlet.dev/integrations/contractor-foreman-api-mcp-server?utm_source=github&utm_medium=readme&utm_campaign=contractor-foreman&utm_content=find)
+- [Contractor Foreman MCP server on Cotlet.dev](https://cotlet.dev/integrations/contractor-foreman-api-mcp-server?utm_source=github&utm_medium=readme&utm_campaign=contractor-foreman&utm_content=find)
+- [Contractor Foreman API with Cotlet](https://cotlet.dev/integrations/api/contractor-foreman?utm_source=github&utm_medium=readme&utm_campaign=contractor-foreman&utm_content=find)
+- [Does Contractor Foreman have an API or MCP server?](https://cotlet.dev/api-mcp-status/contractor-foreman?utm_source=github&utm_medium=readme&utm_campaign=contractor-foreman&utm_content=find)
 - [PyPI package contractor-foreman-mcp](https://pypi.org/project/contractor-foreman-mcp/)
-- [Odel](https://odel.app/modules/cotlet/contractor-foreman)
-- [mcpbeat](https://mcpbeat.com/mcp-servers/cotlet/contractor-foreman/)
-- [Step-by-step guide (PDF) on Internet Archive](https://archive.org/details/cotlet-connect-contractor-foreman-to-ai-agents-guide)
 
-## Also works with
+## More construction apps on Cotlet
 
-- [Mangomint MCP](https://github.com/cotlet-connect/mangomint-mcp)
-- [Wanderlog MCP](https://github.com/cotlet-connect/wanderlog-mcp)
-- [SmugMug MCP](https://github.com/cotlet-connect/smugmug-mcp)
-- [Garmin Connect MCP](https://github.com/cotlet-connect/garmin-mcp)
-- [Housecall Pro MCP](https://github.com/cotlet-connect/housecall-pro-mcp)
-- [Medium MCP](https://github.com/cotlet-connect/medium-mcp)
-- [Crexi MCP](https://github.com/cotlet-connect/crexi-mcp)
-- [DistroKid MCP](https://github.com/cotlet-connect/distrokid-mcp)
-- [LinkedIn MCP](https://github.com/cotlet-connect/linkedin-mcp)
-- [EstimateOne MCP](https://github.com/cotlet-connect/estimateone-mcp)
-- [Google Search Console MCP](https://github.com/cotlet-connect/google-search-console-mcp)
-- [Lichess MCP](https://github.com/cotlet-connect/lichess-mcp)
-- [Strava MCP](https://github.com/cotlet-connect/strava-mcp)
-- [StreamElements MCP](https://github.com/cotlet-connect/streamelements-mcp)
-- [Meetup MCP](https://github.com/cotlet-connect/meetup-mcp)
-- [AccuRanker MCP](https://github.com/cotlet-connect/accuranker-mcp)
-- [GetYourGuide MCP](https://github.com/cotlet-connect/getyourguide-mcp)
-- [Idealista MCP](https://github.com/cotlet-connect/idealista-mcp)
-- [Riverside MCP](https://github.com/cotlet-connect/riverside-mcp)
-- [Udemy MCP](https://github.com/cotlet-connect/udemy-mcp)
-- [Faire MCP](https://github.com/cotlet-connect/faire-mcp)
 - [Buildertrend MCP](https://github.com/cotlet-connect/buildertrend-mcp)
-- [Fresha MCP](https://github.com/cotlet-connect/fresha-mcp)
-- [Booksy MCP](https://github.com/cotlet-connect/booksy-mcp)
-- [BookingKoala MCP](https://github.com/cotlet-connect/bookingkoala-mcp)
-- [Milanote MCP](https://github.com/cotlet-connect/milanote-mcp)
-- [Partiful MCP](https://github.com/cotlet-connect/partiful-mcp)
-- [Pixieset MCP](https://github.com/cotlet-connect/pixieset-mcp)
-- [GlossGenius MCP](https://github.com/cotlet-connect/glossgenius-mcp)
-- [ZenMaid MCP](https://github.com/cotlet-connect/zenmaid-mcp)
-- [All apps connected through Cotlet.dev](https://github.com/cotlet-connect)
-
----
-
-More: https://cotlet.dev/integrations/contractor-foreman-api-mcp-server?utm_source=github&utm_medium=readme&utm_campaign=contractor-foreman
-
-Start free: https://cotlet.dev/signup?app=contractor-foreman&utm_source=github&utm_medium=readme&utm_campaign=contractor-foreman
+- [Tradify MCP](https://github.com/cotlet-connect/tradify-mcp)
+- [Joist MCP](https://github.com/cotlet-connect/joist-mcp)
+- [Housecall Pro MCP](https://github.com/cotlet-connect/housecall-pro-mcp)
+- [Buildxact MCP](https://github.com/cotlet-connect/buildxact-mcp)
